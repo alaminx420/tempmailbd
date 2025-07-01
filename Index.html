@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TempMailBD - Free Temporary Email</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 30px;
+      background-color: #f2f2f2;
+    }
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      display: inline-block;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    #email {
+      font-size: 1.2em;
+      margin: 10px 0;
+      color: #0077cc;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #005fa3;
+    }
+    #inbox {
+      margin-top: 30px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>TempMailBD</h1>
+    <p>Get your free temporary email address instantly!</p>
+    <div id="email">Loading...</div>
+    <button onclick="copyEmail()">Copy Email</button>
+
+    <div id="inbox">
+      <h2>Inbox</h2>
+      <p>Inbox feature coming soon...</p>
+    </div>
+  </div>
+
+  <script>
+    async function generateEmail() {
+      const res = await fetch('https://api.mail.tm/domains');
+      const data = await res.json();
+      const domain = data['hydra:member'][0].domain;
+      const random = Math.random().toString(36).substring(2, 10);
+      const email = ${random}@${domain};
+      document.getElementById('email').innerText = email;
+    }
+
+    function copyEmail() {
+      const email = document.getElementById('email').innerText;
+      navigator.clipboard.writeText(email);
+      alert('Copied: ' + email);
+    }
+
+    generateEmail();
+  </script>
+</body>
+</html>
