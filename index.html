@@ -1,21 +1,78 @@
-<script>
-  async function generateEmail() {
-    try {
-      const domains = ["tempmail.net", "yopmail.com", "maildrop.cc"];
-      const random = Math.random().toString(36).substring(2, 10);
-      const domain = domains[Math.floor(Math.random() * domains.length)];
-      const email = ${random}@${domain};
-      document.getElementById("email").innerText = email;
-    } catch (err) {
-      document.getElementById("email").innerText = "Failed to load email!";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TempMailBD - Free Temporary Email</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 30px;
+      background-color: #f0f4f7;
     }
-  }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      display: inline-block;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 90%;
+    }
+    h1 {
+      color: #007acc;
+    }
+    #email {
+      font-size: 1.3em;
+      margin: 15px 0;
+      color: #007acc;
+      word-break: break-all;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #007acc;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #005f99;
+    }
+    .footer {
+      margin-top: 30px;
+      font-size: 0.9em;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>TempMailBD</h1>
+    <p>Get your free temporary email instantly!</p>
+    <div id="email">Generating...</div>
+    <button onclick="copyEmail()">Copy Email</button>
+    <div class="footer">Powered by TempMailBD | No Sign-up Needed</div>
+  </div>
 
-  function copyEmail() {
-    const email = document.getElementById("email").innerText;
-    navigator.clipboard.writeText(email);
-    alert("Copied: " + email);
-  }
+  <script>
+    function generateEmail() {
+      const names = ['temp', 'mail', 'quick', 'fast', 'safe', 'user', 'guest'];
+      const domains = ['tempmail.net', 'yopmail.com', 'maildrop.cc'];
+      const randomName = names[Math.floor(Math.random() * names.length)] + Math.floor(Math.random() * 10000);
+      const domain = domains[Math.floor(Math.random() * domains.length)];
+      const email = ${randomName}@${domain};
+      document.getElementById("email").innerText = email;
+    }
 
-  generateEmail();
-</script>
+    function copyEmail() {
+      const email = document.getElementById("email").innerText;
+      navigator.clipboard.writeText(email);
+      alert("Copied to clipboard: " + email);
+    }
+
+    generateEmail();
+  </script>
+</body>
+</html>
