@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TempMailBD - Inbox Powered by Mail.tm</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f6f8;
+      padding: 20px;
+      text-align: center;
+    }
+    .container {
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      display: inline-block;
+      width: 90%;
+      max-width: 500px;
+    }
+    h1 {
+      color: #007acc;
+    }
+    #email {
+      font-size: 1.2em;
+      color: #007acc;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+      background-color: #007acc;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #005f99;
+    }
+    .message {
+      text-align: left;
+      margin-top: 20px;
+    }
+    .message-item {
+      border: 1px solid #ddd;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 6px;
+      background: #f9f9f9;
+    }
+    .footer {
+      margin-top: 20px;
+      font-size: 0.8em;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>TempMailBD</h1>
+    <div id="email">Generating email...</div>
+    <button onclick="copyEmail()">Copy Email</button>
+    <button onclick="loadInbox()">Check Inbox</button>
+    <div id="messages" class="message"></div>
+    <div class="footer">Powered by Mail.tm | TempMailBD</div>
+  </div>
+
+  <script>
+    let account = {};
+    let token = "";
+
+    async function generateEmail() {
+      const res = await fetch("https://api.mail.tm/domains");
+      const domains = await res.json();
+      const domain = domains["hydra:member"][0].domain;
+      const username = "user" + Math.floor(Math.random() * 100000);
+      const email = username + "@" + domain;
+      const password = "TempMailBD123";
+
+      const register = await fetch("https://api.mail.tm/accounts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ address: email, password: password })
+      });
+
+      const data = await register.json();
+      account = { address: email, password: password };
+      document.getElementById("email").innerText = email;
+
+      const login = await fetch("https://api.mail.tm/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ address: email, password: password })
+      });
+      const loginData = await login.json();
+      token = loginData.token;
+    }
+
+    function copyEmail() {
+      const email = document.getElementById("email").innerText;
+      navigator.clipboard.writeText(email);
+      alert("Copied: " + email);
+    }
+
+    async function loadInbox() {
+      if (!token) {
+        alert("Email not ready yet!");
+        return;
+      }
+      const res = await fetch("https://api.mail.tm/messages", {
+        headers: { Authorization: "Bearer " + token }
+      });
+      const messages = await res.json();
+      const container = document.getElementById("messages");
+      container.innerHTML = "<h3>Inbox</h3>";
+      if (messages["hydra:member"].length === 0) {
+        container.innerHTML += "<p>No messages yet.</p>";
+        return;
+      }
+
+      for (const msg of messages["hydra:member"]) {
+        const detailRes = await fetch("https://api.mail.tm/messages/" + msg.id, {
+          headers: { Authorization: "Bearer " + token }
+        });
+        const detail = await detailRes.json();
+        container.innerHTML += `
+          <div class="message-item">
+            <strong>From:</strong> ${detail.from.address}<br>
+            <strong>Subject:</strong> ${detail.subject}<br>
+            <strong>Body:</strong><br>
+            <div style="white-space: pre-wrap; background:#fff; padding:10px; margin-top:5px;">${detail.text || "No content"}</div>
+          </div>
+        `;
+      }
+    }
+
+    generateEmail();
+  </script>
+</body>
+</html>
