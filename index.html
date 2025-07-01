@@ -2,86 +2,116 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TempMailBD - Inbox Powered by Mail.tm</title>
+  <meta name="viewport" content=device-width, initial-scale=1.0 />
+  <title>TempMailBD - Free Temporary Email Service</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f4f6f8;
-      padding: 20px;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #007acc;
+      color: white;
+      padding: 20px 0;
       text-align: center;
     }
     .container {
+      max-width: 700px;
+      margin: 20px auto;
       background: #fff;
       padding: 25px;
       border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      display: inline-block;
-      width: 90%;
-      max-width: 500px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
     }
     h1 {
-      color: #007acc;
+      margin-top: 0;
     }
-    #email {
-      font-size: 1.2em;
+    .email-box {
+      font-size: 1.3em;
       color: #007acc;
-      margin-bottom: 10px;
+      margin: 10px 0;
+      word-break: break-all;
     }
-    button {
-      padding: 10px 20px;
+    .btn {
+      padding: 10px 16px;
       margin: 5px;
       border: none;
       border-radius: 5px;
-      background-color: #007acc;
+      background: #007acc;
       color: white;
       cursor: pointer;
     }
-    button:hover {
-      background-color: #005f99;
+    .btn:hover {
+      background: #005f99;
     }
-    .message {
-      text-align: left;
-      margin-top: 20px;
+    .ad-section, .about-contact, footer {
+      text-align: center;
+      margin-top: 25px;
+      font-size: 0.95em;
+    }
+    .ad-section {
+      background: #eaf4ff;
+      padding: 10px;
+      border: 1px dashed #007acc;
+      margin-bottom: 20px;
     }
     .message-item {
-      border: 1px solid #ddd;
-      margin: 10px 0;
-      padding: 10px;
-      border-radius: 6px;
       background: #f9f9f9;
-    }
-    .footer {
-      margin-top: 20px;
-      font-size: 0.8em;
-      color: #666;
-    }
-    .ad-box {
-      margin: 15px 0;
+      border-left: 4px solid #007acc;
       padding: 10px;
-      background: #e7f3ff;
-      border: 1px dashed #007acc;
-      color: #007acc;
+      margin: 10px 0;
+      text-align: left;
       border-radius: 6px;
+    }
+    .about-contact {
+      background: #f0f0f0;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 40px;
+    }
+    footer {
+      margin-top: 40px;
+      font-size: 0.8em;
+      color: #555;
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <header>
     <h1>TempMailBD</h1>
-    <div class="ad-box">
-      <!-- Ad Placeholder (PropellerAds/NiceAds) -->
-      <p><strong>Ad Space</strong>: Place your ad code here (728x90 recommended)</p>
+    <p>Get your free disposable email instantly</p>
+  </header>
+
+  <div class="container">
+    <div class="ad-section">
+      <!-- AdSense-Compatible Ad Zone -->
+      <p><strong>Advertisement:</strong> Place your AdSense code here</p>
     </div>
-    <div id="email">Generating email...</div>
-    <button onclick="copyEmail()">Copy Email</button>
-    <button onclick="loadInbox()">Check Inbox</button>
-    <div id="messages" class="message"></div>
-    <div class="footer">Powered by Mail.tm | TempMailBD</div>
+
+    <div class="email-box" id="email">Generating email...</div>
+    <button class="btn" onclick="copyEmail()">Copy Email</button>
+    <button class="btn" onclick="loadInbox()">Check Inbox</button>
+    <button class="btn" onclick="loadInbox()">Refresh Inbox</button>
+
+    <div id="messages">
+      <p>No messages yet.</p>
+    </div>
+
+    <div class="about-contact">
+      <h3>About Us</h3>
+      <p>TempMailBD provides fast, anonymous, and secure disposable email addresses. No registration needed. Use it to protect your privacy online.</p>
+      <h3>Contact Us</h3>
+      <p>Email: support@tempmailbd.live</p>
+    </div>
   </div>
 
+  <footer>
+    &copy; 2025 TempMailBD — Developer: Md Alamin
+  </footer>
+
   <script>
-    let account = {};
     let token = "";
 
     async function generateEmail() {
@@ -92,14 +122,12 @@
       const email = username + "@" + domain;
       const password = "TempMailBD123";
 
-      const register = await fetch("https://api.mail.tm/accounts", {
+      await fetch("https://api.mail.tm/accounts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ address: email, password: password })
       });
 
-      const data = await register.json();
-      account = { address: email, password: password };
       document.getElementById("email").innerText = email;
 
       const login = await fetch("https://api.mail.tm/token", {
@@ -107,6 +135,7 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ address: email, password: password })
       });
+
       const loginData = await login.json();
       token = loginData.token;
     }
@@ -122,14 +151,16 @@
         alert("Email not ready yet!");
         return;
       }
+
       const res = await fetch("https://api.mail.tm/messages", {
         headers: { Authorization: "Bearer " + token }
       });
       const messages = await res.json();
       const container = document.getElementById("messages");
-      container.innerHTML = "<h3>Inbox</h3>";
+      container.innerHTML = "";
+
       if (messages["hydra:member"].length === 0) {
-        container.innerHTML += "<p>No messages yet.</p>";
+        container.innerHTML = "<p>No messages yet.</p>";
         return;
       }
 
@@ -143,7 +174,7 @@
             <strong>From:</strong> ${detail.from.address}<br>
             <strong>Subject:</strong> ${detail.subject}<br>
             <strong>Body:</strong><br>
-            <div style="white-space: pre-wrap; background:#fff; padding:10px; margin-top:5px;">${detail.text || "No content"}</div>
+            <div style="white-space: pre-wrap;">${detail.text || "No content"}</div>
           </div>
         `;
       }
