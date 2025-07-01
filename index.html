@@ -93,7 +93,7 @@
     <p>Free Disposable Email Generator with Inbox</p>
   </header>
   <main>
-    <div class="ad-section">
+    <div class="ad-section" style="min-height:90px;"><!-- AdSense/NiceAd 728x90 -->
       <!-- AdSense/NiceAd Placeholder Top -->
       <strong>Ad Area (728x90)</strong>
     </div>
@@ -105,7 +105,7 @@
       <button onclick="loadInbox()">Refresh Inbox</button>
     </div>
 
-    <div class="ad-inbox">
+    <div class="ad-inbox" style="min-height:250px;"><!-- Ad Inside Inbox 300x250 -->
       <!-- Inbox Middle Ad -->
       <strong>Ad Area Inside Inbox</strong>
     </div>
@@ -122,7 +122,7 @@
     </div>
   </main>
   <footer>
-    &copy; 2025 TempMailBD | Developer: Alamin
+    &copy; 2025 TempMailBD | Developer: Md.Alamin
   </footer>
 
   <script>
@@ -182,9 +182,10 @@
           headers: { Authorization: "Bearer " + token }
         });
         const detail = await detailRes.json();
+        const sender = detail.from.name ? `${detail.from.name} <${detail.from.address}>` : detail.from.address;
         container.innerHTML += `
           <div class="message-item">
-            <strong>From:</strong> ${detail.from.address}<br>
+            <strong>From:</strong> ${sender}<br>
             <strong>Subject:</strong> ${detail.subject}<br>
             <strong>Body:</strong><br>
             <div style="white-space: pre-wrap;">${detail.text || "No content"}</div>
