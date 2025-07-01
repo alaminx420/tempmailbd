@@ -4,18 +4,159 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>TempMailBD - Free Temporary Email in Bangladesh</title>
-  <meta name="description" content="TempMailBD offers free, disposable, and secure temporary email addresses. Get a temp mail for verification or signups instantly.">
-  <meta name="keywords" content="temp mail bd, temporary email bangladesh, tempmail, disposable email, free email generator, tempmailbd">
+  <meta name="description" content="Get a secure, free disposable email address instantly with TempMailBD. Perfect for verification and privacy.">
+  <meta name="keywords" content="tempmail, tempmailbd, temporary email, Bangladesh, disposable email, inbox, no registration email">
   <meta name="author" content="Md.Alamin">
-  <meta property="og:title" content="TempMailBD - Get Temporary Email Instantly">
-  <meta property="og:description" content="Free and secure temporary email address for instant signup or verification. Fast inbox. No registration needed.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://tempmailbd.online">
-  <meta property="og:image" content="https://tempmailbd.online/og-image.jpg">
-  <link rel="icon" href="https://tempmailbd.online/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #007bff;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    main {
+      max-width: 700px;
+      margin: auto;
+      padding: 1rem;
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .email-box {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #333;
+      text-align: center;
+      padding: 0.5rem;
+      border: 2px dashed #007bff;
+      margin-bottom: 1rem;
+    }
+    .btn-group {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .ads, .inbox-ad {
+      border: 1px dashed #aaa;
+      text-align: center;
+      padding: 1rem;
+      margin: 1rem 0;
+      background: #f9f9f9;
+    }
+    footer {
+      background: #e9ecef;
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      color: #555;
+    }
+  </style>
 </head>
 <body>
-  <h1>TempMailBD - Developer ❤️ MD.Alamin</h1>
-  <p>This is your SEO-ready version of TempMailBD. You can upload this to GitHub Pages.</p>
+  <header>
+    <h1>TempMailBD</h1>
+    <p>Get Your Free Temporary Email</p>
+  </header>
+  <main>
+    <div class="ads">🔷 Ad Area (728x90)</div>
+    <div id="emailDisplay" class="email-box">Generating email...</div>
+    <div class="btn-group">
+      <button onclick="copyEmail()">Copy Email</button>
+      <button onclick="loadInbox()">Check Inbox</button>
+      <button onclick="loadInbox()">Refresh</button>
+    </div>
+    <div class="inbox-ad">📩 Ad Area Inside Inbox (300x250)</div>
+    <div id="inbox"><p style="text-align:center;">No messages yet.</p></div>
+    <section>
+      <h3>About Us</h3>
+      <p>TempMailBD gives you a fast and secure temporary email address. Use it to protect your personal inbox and get verification codes instantly.</p>
+      <h3>Contact Us</h3>
+      <p>Email: support@tempmailbd.live</p>
+    </section>
+  </main>
+  <footer>
+    &copy; 2025 TempMailBD | Developer ❤️ MD.Alamin
+  </footer>
+  <script>
+    let token = "";
+    async function generateEmail() {
+      const res = await fetch("https://api.mail.tm/domains");
+      const data = await res.json();
+      const domain = data["hydra:member"][0].domain;
+      const email = "tempbd" + Math.floor(Math.random() * 10000) + "@" + domain;
+      const password = "TempMailBD123";
+
+      await fetch("https://api.mail.tm/accounts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ address: email, password })
+      });
+
+      document.getElementById("emailDisplay").innerText = email;
+
+      const tokenRes = await fetch("https://api.mail.tm/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ address: email, password })
+      });
+
+      const tokenData = await tokenRes.json();
+      token = tokenData.token;
+    }
+
+    function copyEmail() {
+      const email = document.getElementById("emailDisplay").innerText;
+      navigator.clipboard.writeText(email);
+      alert("Copied: " + email);
+    }
+
+    async function loadInbox() {
+      if (!token) {
+        alert("Please wait until email is generated.");
+        return;
+      }
+
+      const inboxRes = await fetch("https://api.mail.tm/messages", {
+        headers: { Authorization: "Bearer " + token }
+      });
+      const inboxData = await inboxRes.json();
+      const inboxDiv = document.getElementById("inbox");
+      inboxDiv.innerHTML = "";
+
+      if (inboxData["hydra:member"].length === 0) {
+        inboxDiv.innerHTML = "<p style='text-align:center;'>No messages yet.</p>";
+        return;
+      }
+
+      for (const msg of inboxData["hydra:member"]) {
+        const detailRes = await fetch("https://api.mail.tm/messages/" + msg.id, {
+          headers: { Authorization: "Bearer " + token }
+        });
+        const detail = await detailRes.json();
+        inboxDiv.innerHTML += `<div style="border:1px solid #ccc; padding:10px; margin:10px 0;">
+          <strong>From:</strong> ${detail.from.address}<br>
+          <strong>Subject:</strong> ${detail.subject}<br>
+          <div>${detail.text || "No content"}</div>
+        </div>`;
+      }
+    }
+
+    generateEmail();
+  </script>
 </body>
 </html>
