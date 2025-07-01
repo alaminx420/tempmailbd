@@ -62,7 +62,7 @@
       const domains = ['tempmail.net', 'yopmail.com', 'maildrop.cc'];
       const randomName = names[Math.floor(Math.random() * names.length)] + Math.floor(Math.random() * 10000);
       const domain = domains[Math.floor(Math.random() * domains.length)];
-      const email = ${randomName}@${domain};
+      const email = `${randomName}@${domain}`;
       document.getElementById("email").innerText = email;
     }
 
