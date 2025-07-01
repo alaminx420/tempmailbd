@@ -65,6 +65,10 @@
       border: 1px dashed #64b5f6;
       margin: 15px 0;
       border-radius: 6px;
+      min-height: 90px;
+    }
+    .ad-inbox {
+      min-height: 250px;
     }
     .message-item {
       background: #f9f9f9;
@@ -93,8 +97,8 @@
     <p>Free Disposable Email Generator with Inbox</p>
   </header>
   <main>
-    <div class="ad-section" style="min-height:90px;"><!-- AdSense/NiceAd 728x90 -->
-      <!-- AdSense/NiceAd Placeholder Top -->
+    <div class="ad-section ad-top">
+      <!-- AdSense/NiceAd Placeholder Top (728x90) -->
       <strong>Ad Area (728x90)</strong>
     </div>
 
@@ -105,9 +109,9 @@
       <button onclick="loadInbox()">Refresh Inbox</button>
     </div>
 
-    <div class="ad-inbox" style="min-height:250px;"><!-- Ad Inside Inbox 300x250 -->
-      <!-- Inbox Middle Ad -->
-      <strong>Ad Area Inside Inbox</strong>
+    <div class="ad-inbox">
+      <!-- Inbox Middle Ad (300x250) -->
+      <strong>Ad Area Inside Inbox (300x250)</strong>
     </div>
 
     <div id="messages">
@@ -122,7 +126,7 @@
     </div>
   </main>
   <footer>
-    &copy; 2025 TempMailBD | Developer: Md.Alamin
+    &copy; 2025 TempMailBD | Developer ❤️ MD.Alamin
   </footer>
 
   <script>
@@ -131,7 +135,7 @@
       const res = await fetch("https://api.mail.tm/domains");
       const domains = await res.json();
       const domain = domains["hydra:member"][0].domain;
-      const username = "user" + Math.floor(Math.random() * 100000);
+      const username = "tempbd" + Math.floor(Math.random() * 100000);
       const email = username + "@" + domain;
       const password = "TempMailBD123";
 
